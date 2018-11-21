@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 @ApiModel
 @Entity
@@ -24,12 +25,7 @@ public class Item {
     @Column(name = "price")
     @NotNull(message = "Price can not be empty")
     @ApiModelProperty(position = 3, required = true, notes = "price")
-    private String price;
-
-    @Column(name = "quantity")
-    @NotNull(message = "Quantity can not be empty")
-    @ApiModelProperty(position = 4, required = true, notes = "qauntity")
-    private int quantity;
+    private BigDecimal price;
 
     @ManyToOne
     @JoinColumn(name="id", nullable=false)
