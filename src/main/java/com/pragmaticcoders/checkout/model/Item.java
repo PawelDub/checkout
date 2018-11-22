@@ -1,5 +1,6 @@
 package com.pragmaticcoders.checkout.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,18 +24,24 @@ public class Item {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "name")
+    @NotNull(message = "Name can not be empty or null")
+    @ApiModelProperty(position = 2, dataType = "String", required = true, notes = "name")
+    private String name;
+
     @Column(name = "type")
     @NotNull(message = "Type can not be empty or null")
-    @ApiModelProperty(position = 2, dataType = "String", required = true, notes = "type")
-    private String productType;
+    @ApiModelProperty(position = 3, dataType = "String", required = true, notes = "type")
+    private String type;
 
     @Column(name = "price")
     @NotNull(message = "Price can not be empty")
-    @ApiModelProperty(position = 3, dataType = "BigDecimal", required = true, notes = "price")
+    @ApiModelProperty(position = 4, dataType = "BigDecimal", required = true, notes = "price")
     private BigDecimal price;
 
-    @Column(name = "quantity")
-    @ApiModelProperty(position = 4, dataType = "int", required = true, notes = "quantity")
+    @JsonIgnore
+    @NotNull(message = "Quantity can not be empty")
+    @ApiModelProperty(position = 5, dataType = "int", required = true, notes = "quantity")
     private int quantity;
 
     @ManyToMany(mappedBy = "items")
