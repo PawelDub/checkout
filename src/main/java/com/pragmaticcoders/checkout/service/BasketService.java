@@ -1,48 +1,64 @@
 package com.pragmaticcoders.checkout.service;
 
+import com.pragmaticcoders.checkout.exceptions.BasketStatusException;
 import com.pragmaticcoders.checkout.model.Basket;
-import com.pragmaticcoders.checkout.model.Item;
 import com.pragmaticcoders.checkout.repository.BasketRepository;
-import javafx.scene.transform.Scale;
+import com.pragmaticcoders.checkout.service.discount.price.PriceStrategyService;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 public class BasketService {
 
+    //TODO Logger
+
     private BasketRepository basketRepository;
+    private PriceStrategyService priceStrategyService;
 
     @Autowired
-    public BasketService(BasketRepository basketRepository) {
+    public BasketService(BasketRepository basketRepository, PriceStrategyService priceStrategyService) {
         this.basketRepository = basketRepository;
+        this.priceStrategyService = priceStrategyService;
     }
 
     public Basket open() {
-        return save(new Basket());
+        return save(new Basket(Basket.BasketStatus.NEW, new BigDecimal("0.00")));
     }
 
-    public Basket save(Basket basket) {
+    private Basket save(Basket basket) {
         return basketRepository.save(basket);
     }
 
-    public Basket update(Basket basket) {
+    public Basket update(Basket basket) throws BasketStatusException {
+        if (basket.getStatus().equals(Basket.BasketStatus.NEW)) basket.setStatus(Basket.BasketStatus.ACTIVE);
+        if (!basket.getStatus().equals(Basket.BasketStatus.ACTIVE))
+            throw new BasketStatusException(String.format("%s basket can not be updated", basket.getStatus().toString()));
         return basketRepository.save(basket);
+    }
+
+    public Optional<Basket> findById(Long basketId) {
+        return basketRepository.findById(basketId);
     }
 
     public Basket close(Basket basket) {
-        return coutTotalPrice(basket);
+        basket.setStatus(Basket.BasketStatus.CLOSED);
+        basket = countTotalPrice(basket);
+        return save(basket);
     }
 
-    public void delete(Long basketId) {
-        basketRepository.deleteById(basketId);
+    public void delete(Long basketId) throws BasketStatusException, NotFoundException {
+        Basket basket = findById(basketId).orElseThrow(() -> new NotFoundException("Not found that user"));
+        if(basket.getStatus().equals(Basket.BasketStatus.CLOSED)) throw new BasketStatusException(String.format("%s basket can not be deleted", basket.getStatus().toString()));
+            basketRepository.deleteById(basketId);
     }
 
-    public Basket coutTotalPrice(Basket basket) {
-        BigDecimal totalPrice = new BigDecimal("0.00");
-        //TODO discount strategy
-        basket.setTotalPrice(totalPrice);
+    public Basket countTotalPrice(Basket basket) {
+        basket.setTotalPrice(priceStrategyService.getFinalPrice(basket));
         return basket;
     }
+
 }

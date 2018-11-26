@@ -3,30 +3,28 @@ package com.pragmaticcoders.checkout.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @ApiModel
 @Entity
 @Table(name = "basket")
-@Data
-@NoArgsConstructor
 public class Basket {
 
     public enum BasketStatus {
         NEW, ACTIVE, CLOSED, CANCELED
     }
 
-    @ApiModelProperty(position = 1, dataType = "long", required = true, notes = "The database generated product ID")
+    @Column(name = "basket_id")
+    @ApiModelProperty(position = 1, dataType = "Long", required = true, notes = "The database generated product ID")
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long basket_id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     @Column(name = "status")
     @NotNull(message = "Status can not be empty")
@@ -40,12 +38,68 @@ public class Basket {
     @JsonProperty(value = "total_price")
     private BigDecimal totalPrice;
 
-    @ManyToMany(mappedBy="basket")
-    @JoinTable(
-            name = "basket_item",
-            joinColumns = { @JoinColumn(name = "basket_id") },
-            inverseJoinColumns = { @JoinColumn(name = "item_id") }
+    @ManyToMany(
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.ALL})
+    @JoinTable(name = "basket_item",
+            joinColumns = {@JoinColumn(name = "basket_id")},
+            inverseJoinColumns = {@JoinColumn(name = "item_id")}
     )
-    private Set<Item> items = new LinkedHashSet<>();
+    private List<Item> items = new ArrayList<>();
 
+    public Basket(@Valid BasketStatus status, @Valid BigDecimal totalPrice) {
+        this.status = status;
+        this.totalPrice = totalPrice;
+    }
+
+    public Basket(@Valid BasketStatus status, @Valid BigDecimal totalPrice, List<Item> items) {
+        this.status = status;
+        this.totalPrice = totalPrice;
+        this.items = items;
+    }
+
+    public Basket() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public BasketStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(BasketStatus status) {
+        this.status = status;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    @Override
+    public String toString() {
+        return "Basket{" +
+                "id=" + id +
+                ", status=" + status +
+                ", totalPrice=" + totalPrice +
+                ", items=" + items +
+                '}';
+    }
 }

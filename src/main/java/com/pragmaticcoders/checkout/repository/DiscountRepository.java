@@ -1,9 +1,9 @@
 package com.pragmaticcoders.checkout.repository;
 
-import com.pragmaticcoders.checkout.model.Basket;
+import com.pragmaticcoders.checkout.model.Discount;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BasketRepository extends CrudRepository<Basket, Long> {
+public interface DiscountRepository extends CrudRepository<Discount, Long> {
 }
