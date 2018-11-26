@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -31,12 +32,9 @@ public class Item {
     @ApiModelProperty(position = 3, dataType = "BigDecimal", required = true, notes = "price")
     private BigDecimal price;
 
-    @Transient
-    @ApiModelProperty(position = 4, dataType = "Integer", required = true, notes = "quantity")
-    private int quantity;
-
-    @ManyToMany(mappedBy = "items", fetch=FetchType.EAGER)
-    private Set<Basket> baskets = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "item", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ApiModelProperty(position = 4, dataType = "Set<BasketItem>", required = true, notes = "basket items")
+    private Set<BasketItem> basketItems = new HashSet<BasketItem>();
 
     public Item(@Valid String type, @Valid BigDecimal price) {
         this.type = type;
@@ -70,20 +68,12 @@ public class Item {
         this.price = price;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public Set<BasketItem> getBasketItems() {
+        return basketItems;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public Set<Basket> getBaskets() {
-        return baskets;
-    }
-
-    public void setBaskets(Set<Basket> baskets) {
-        this.baskets = baskets;
+    public void setBasketItems(Set<BasketItem> basketItems) {
+        this.basketItems = basketItems;
     }
 
     @Override
@@ -92,8 +82,7 @@ public class Item {
                 "id=" + id +
                 ", type='" + type + '\'' +
                 ", price=" + price +
-                ", quantity=" + quantity +
-                ", baskets=" + baskets +
+                ", basketItems=" + basketItems +
                 '}';
     }
 }

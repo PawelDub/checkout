@@ -1,6 +1,7 @@
 package com.pragmaticcoders.checkout.strategy.pricestrategy;
 
 import com.pragmaticcoders.checkout.model.Basket;
+import com.pragmaticcoders.checkout.model.BasketItem;
 import com.pragmaticcoders.checkout.model.Discount;
 import com.pragmaticcoders.checkout.model.Item;
 import com.pragmaticcoders.checkout.service.PriceDiscountService;
@@ -26,10 +27,11 @@ public class SpecialPricePerTypeStrategy implements PriceStrategy {
         Map<String, Discount> discountMap = priceDiscountService.getDiscountAsMap();
         Double totalPrice = new Double("0.00");
 
-        for (Item item : basket.getItems()) {
-            if (discountMap.containsKey(item.getType()) && item.getQuantity() >= discountMap.get(item.getType()).getQuantity()) {
-                int quantityDiscounts = item.getQuantity() / discountMap.get(item.getType()).getQuantity();
-                int quantityNotDiscounted = item.getQuantity() % discountMap.get(item.getType()).getQuantity();
+        for (BasketItem basketItem : basket.getBasketItems()) {
+            Item item = basketItem.getItem();
+            if (discountMap.containsKey(item.getType()) && basketItem.getQuantity() >= discountMap.get(item.getType()).getQuantity()) {
+                int quantityDiscounts = basketItem.getQuantity() / discountMap.get(item.getType()).getQuantity();
+                int quantityNotDiscounted = basketItem.getQuantity() % discountMap.get(item.getType()).getQuantity();
 
                 totalPrice += discountMap.get(item.getType()).getDiscountPrice().multiply(BigDecimal.valueOf(quantityDiscounts)).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
@@ -37,7 +39,7 @@ public class SpecialPricePerTypeStrategy implements PriceStrategy {
                     totalPrice += item.getPrice().multiply(BigDecimal.valueOf(quantityNotDiscounted)).setScale(2, RoundingMode.HALF_UP).doubleValue();
                 }
             } else {
-                totalPrice += item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())).setScale(2, RoundingMode.HALF_UP).doubleValue();
+                totalPrice += item.getPrice().multiply(BigDecimal.valueOf(basketItem.getQuantity())).setScale(2, RoundingMode.HALF_UP).doubleValue();
             }
         }
 

@@ -1,6 +1,7 @@
 package com.pragmaticcoders.checkout.strategy.pricestrategy;
 
 import com.pragmaticcoders.checkout.model.Basket;
+import com.pragmaticcoders.checkout.model.BasketItem;
 import com.pragmaticcoders.checkout.model.Item;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,8 @@ public class DefaultPriceStrategy implements PriceStrategy {
     public BigDecimal calculationFinalPrice(Basket basket) {
         Double finalPrice = new Double("0.00");
 
-        for (Item item : basket.getItems()) {
-            finalPrice += item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        for (BasketItem basketItem : basket.getBasketItems()) {
+            finalPrice += basketItem.getItem().getPrice().multiply(BigDecimal.valueOf(basketItem.getQuantity())).setScale(2, RoundingMode.HALF_UP).doubleValue();
         }
 
         return new BigDecimal(finalPrice).setScale(2, RoundingMode.HALF_UP);

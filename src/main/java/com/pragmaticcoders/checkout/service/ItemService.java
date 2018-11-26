@@ -6,6 +6,8 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ItemService  {
     //TODO Logger
@@ -29,8 +31,8 @@ public class ItemService  {
         itemRepository.deleteById(itemId);
     }
 
-    public Iterable<Item> findItemsByType(String type) throws NotFoundException {
-        return itemRepository.findAllItemsByType(type);
+    public Optional<Item> findItemsByType(String type) {
+        return itemRepository.findItemByType(type);
     }
 
     public Iterable<Item> findAll() {

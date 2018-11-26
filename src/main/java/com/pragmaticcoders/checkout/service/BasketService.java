@@ -51,9 +51,12 @@ public class BasketService {
     }
 
     public void delete(Long basketId) throws BasketStatusException, NotFoundException {
-        Basket basket = findById(basketId).orElseThrow(() -> new NotFoundException("Not found that user"));
-        if(basket.getStatus().equals(Basket.BasketStatus.CLOSED)) throw new BasketStatusException(String.format("%s basket can not be deleted", basket.getStatus().toString()));
+        Basket basket = findById(basketId).orElseThrow(() -> new NotFoundException("User not found"));
+        if(basket.getStatus().equals(Basket.BasketStatus.CLOSED)) {
+            throw new BasketStatusException(String.format("%s basket can not be deleted", basket.getStatus().toString()));
+        } else {
             basketRepository.deleteById(basketId);
+        }
     }
 
     public Basket countTotalPrice(Basket basket) {

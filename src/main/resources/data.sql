@@ -22,14 +22,17 @@ CREATE INDEX item_type
   ON item (type);
 
 CREATE TABLE if not exists basket_item (
+  basket_item_id int primary key ,
   basket_id int NOT NULL,
   item_id   int NOT NULL,
-  PRIMARY KEY (basket_id, item_id),
-  CONSTRAINT basket_item_fk1
-  FOREIGN KEY (basket_id) REFERENCES basket (basket_id),
-  CONSTRAINT basket_item_fk2
-  FOREIGN KEY (item_id) REFERENCES item (item_id)
+  item_quantity int NOT NULL,
+
+  foreign key (basket_id) references basket(basket_id),
+  foreign key (item_id) references item(item_id),
 );
+
+CREATE INDEX basket_item_basket_id
+  ON basket_item (basket_id);
 
 create table if not exists discount (
   discount_id int primary key,
@@ -42,15 +45,15 @@ ALTER TABLE discount
   ADD CONSTRAINT uq_discountprice UNIQUE (type, quantity, discount_price);
 
 -- temporary for developing time
-insert into item values (1, 'koszule', 40);
-insert into item values (2, 'spodnie', 10);
-insert into item values (3, 'buty', 30);
-insert into item values (4, 'rekawiczki', 25);
-insert into item values (5, 'kurtki', 45);
-insert into item values (6, 'palta', 80);
-
-
-insert into discount values (1, 'koszule', 3, 70.00);
-insert into discount values (2, 'spodnie', 2, 15);
-insert into discount values (3, 'buty', 4, 60);
-insert into discount values (4, 'rekawiczki', 2, 40);
+-- insert into item values (1, 'koszule', 40);
+-- insert into item values (2, 'spodnie', 10);
+-- insert into item values (3, 'buty', 30);
+-- insert into item values (4, 'rekawiczki', 25);
+-- insert into item values (5, 'kurtki', 45);
+-- insert into item values (6, 'palta', 80);
+--
+--
+-- insert into discount values (1, 'koszule', 3, 70.00);
+-- insert into discount values (2, 'spodnie', 2, 15);
+-- insert into discount values (3, 'buty', 4, 60);
+-- insert into discount values (4, 'rekawiczki', 2, 40);

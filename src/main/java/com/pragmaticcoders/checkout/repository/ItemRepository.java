@@ -5,8 +5,10 @@ import javassist.NotFoundException;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ItemRepository extends CrudRepository<Item, Long> {
 
-    Iterable<Item> findAllItemsByType(String type) throws NotFoundException;
+    Optional<Item> findItemByType(String type);
 }
