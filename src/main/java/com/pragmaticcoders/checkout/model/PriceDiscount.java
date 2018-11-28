@@ -9,9 +9,9 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "discount")
+@Table(name = "price_discount")
 @ApiModel
-public class Discount {
+public class PriceDiscount {
 
     @Column(name = "discount_id")
     @ApiModelProperty(position = 1, dataType = "Long", required = true, notes = "The database generated product ID")
@@ -29,18 +29,18 @@ public class Discount {
     @ApiModelProperty(position = 3, dataType = "String", required = true, notes = "item type")
     private int quantity;
 
-    @Column(name = "discount_price")
-    @NotNull(message = "Discount price can not be empty")
-    @ApiModelProperty(position = 4, dataType = "BigDecimal", required = true, notes = "Discount price")
-    private BigDecimal discountPrice;
+    @Column(name = "price_discount")
+    @NotNull(message = "PriceDiscount price can not be empty")
+    @ApiModelProperty(position = 4, dataType = "BigDecimal", required = true, notes = "PriceDiscount price")
+    private BigDecimal priceDiscount;
 
-    public Discount(@Valid String type, @Valid int quantity, @Valid BigDecimal discountPrice) {
+    public PriceDiscount(@Valid String type, @Valid int quantity, @Valid BigDecimal priceDiscount) {
         this.type = type;
         this.quantity = quantity;
-        this.discountPrice = discountPrice;
+        this.priceDiscount = priceDiscount;
     }
 
-    public Discount() {
+    public PriceDiscount() {
     }
 
     public Long getId() {
@@ -67,21 +67,12 @@ public class Discount {
         this.quantity = quantity;
     }
 
-    public BigDecimal getDiscountPrice() {
-        return discountPrice;
+    public BigDecimal getPriceDiscount() {
+        return priceDiscount;
     }
 
-    public void setDiscountPrice(BigDecimal discountPrice) {
-        this.discountPrice = discountPrice;
+    public void setPriceDiscount(BigDecimal priceDiscount) {
+        this.priceDiscount = priceDiscount;
     }
 
-    @Override
-    public String toString() {
-        return "Discount{" +
-                "id=" + id +
-                ", type='" + type + '\'' +
-                ", quantity=" + quantity +
-                ", discountPrice=" + discountPrice +
-                '}';
-    }
 }

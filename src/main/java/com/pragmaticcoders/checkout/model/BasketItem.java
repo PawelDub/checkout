@@ -3,6 +3,7 @@ package com.pragmaticcoders.checkout.model;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "basket_item")
@@ -15,18 +16,27 @@ public class BasketItem {
     private Long basketItemId;
 
     @ApiModelProperty(position = 2, dataType = "Basket", required = true, notes = "basket")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "basket_id")
     private Basket basket;
 
     @ApiModelProperty(position = 3, dataType = "Item", required = true, notes = "item")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
 
     @Column(name = "item_quantity")
     @ApiModelProperty(position = 4, dataType = "Set<BasketItem>", required = true, notes = "basket items")
     private int quantity;
+
+    public BasketItem(Basket basket, Item item, int quantity) {
+        this.basket = basket;
+        this.item = item;
+        this.quantity = quantity;
+    }
+
+    public BasketItem() {
+    }
 
     public Long getBasketItemId() {
         return basketItemId;
@@ -59,4 +69,16 @@ public class BasketItem {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BasketItem)) return false;
+        BasketItem that = (BasketItem) o;
+        return getQuantity() == that.getQuantity() &&
+                Objects.equals(getBasketItemId(), that.getBasketItemId()) &&
+                Objects.equals(getBasket(), that.getBasket()) &&
+                Objects.equals(getItem(), that.getItem());
+    }
+
 }

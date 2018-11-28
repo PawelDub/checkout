@@ -1,6 +1,5 @@
 package com.pragmaticcoders.checkout.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -9,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @ApiModel
@@ -86,12 +86,13 @@ public class Basket {
     }
 
     @Override
-    public String toString() {
-        return "Basket{" +
-                "id=" + id +
-                ", status=" + status +
-                ", totalPrice=" + totalPrice +
-                ", basketItems=" + basketItems +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Basket)) return false;
+        Basket basket = (Basket) o;
+        return Objects.equals(getId(), basket.getId()) &&
+                getStatus() == basket.getStatus() &&
+                Objects.equals(getTotalPrice(), basket.getTotalPrice()) &&
+                Objects.equals(getBasketItems(), basket.getBasketItems());
     }
 }

@@ -2,7 +2,6 @@ package com.pragmaticcoders.checkout.service;
 
 import com.pragmaticcoders.checkout.model.BasketItem;
 import com.pragmaticcoders.checkout.repository.BasketItemRepository;
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +23,15 @@ public class BasketItemService {
         return basketItemRepository.save(basketItem);
     }
 
-    public void delete(BasketItem basketItem) {
-        basketItemRepository.delete(basketItem);
+    public void deleteById(Long basketItemId) {
+        basketItemRepository.deleteById(basketItemId);
     }
 
-    public Iterable<BasketItem> findAllByBasketId(Long basketId) throws NotFoundException {
+    public Iterable<BasketItem> findAllByBasketId(Long basketId) {
         return basketItemRepository.findAllByBasketId(basketId);
+    }
+
+    public BasketItem findByBasketIdAndItemId(Long basketId, Long itemId) {
+        return basketItemRepository.findByBasketIdAndItemId(basketId, itemId);
     }
 }

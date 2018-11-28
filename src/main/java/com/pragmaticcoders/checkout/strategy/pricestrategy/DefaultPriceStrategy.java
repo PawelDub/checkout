@@ -2,7 +2,6 @@ package com.pragmaticcoders.checkout.strategy.pricestrategy;
 
 import com.pragmaticcoders.checkout.model.Basket;
 import com.pragmaticcoders.checkout.model.BasketItem;
-import com.pragmaticcoders.checkout.model.Item;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

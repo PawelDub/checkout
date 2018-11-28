@@ -2,7 +2,6 @@ package com.pragmaticcoders.checkout.service;
 
 import com.pragmaticcoders.checkout.model.Item;
 import com.pragmaticcoders.checkout.repository.ItemRepository;
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -3,20 +3,17 @@ package com.pragmaticcoders.checkout;
 import com.pragmaticcoders.checkout.model.Item;
 import com.pragmaticcoders.checkout.repository.ItemRepository;
 import com.pragmaticcoders.checkout.service.ItemService;
-import org.checkerframework.checker.units.qual.A;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class ItemTest {
 
@@ -26,6 +23,11 @@ public class ItemTest {
     @Autowired
     ItemRepository itemRepository;
 
+    @BeforeEach
+    public void before() {
+        itemRepository.deleteAll();
+    }
+
     @Test
     @DisplayName("item should be add correctly")
     public  void addItem() {
@@ -33,6 +35,7 @@ public class ItemTest {
         Item item = new Item("koszule", new BigDecimal(40));
         Item savedItem = itemService.save(item);
         assertThat(savedItem.getType()).isEqualTo(itemRepository.findById(savedItem.getId()).get().getType());
+        itemService.delete(item.getId());
     }
 
     @Test
@@ -47,10 +50,11 @@ public class ItemTest {
 
         savedItem = itemService.save(item);
         assertThat(savedItem.getType()).isEqualTo(item.getType());
+        itemService.delete(item.getId());
     }
 
     @Test
-    @DisplayName("should update item correctly")
+    @DisplayName("should delete item correctly")
     public  void deleteItem() {
 
         Item item = new Item("koszule", new BigDecimal(40));
@@ -73,6 +77,8 @@ public class ItemTest {
 
         Optional<Item> itemByType = itemService.findItemsByType("koszule");
         assertThat(itemByType.get().getType()).isEqualTo(item_1.getType());
+        itemService.delete(item_1.getId());
+        itemService.delete(item_2.getId());
 
     }
 }

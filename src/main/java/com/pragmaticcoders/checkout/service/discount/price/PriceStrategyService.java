@@ -17,12 +17,12 @@ public class PriceStrategyService {
 
     private PriceStrategy priceStrategy = new DefaultPriceStrategy();
     private PriceStrategy defaultPriceStrategy;
-    private PriceStrategy specialPricePerTypeStrategy;
+    private PriceStrategy pricePerTypeStrategy;
 
     @Autowired
-    public PriceStrategyService(PriceStrategy defaultPriceStrategy, PriceStrategy specialPricePerTypeStrategy) {
+    public PriceStrategyService(PriceStrategy defaultPriceStrategy, PriceStrategy pricePerTypeStrategy) {
         this.defaultPriceStrategy = defaultPriceStrategy;
-        this.specialPricePerTypeStrategy = specialPricePerTypeStrategy;
+        this.pricePerTypeStrategy = pricePerTypeStrategy;
     }
 
     public void setPriceStrategy(Strategy strategy) {
@@ -33,7 +33,7 @@ public class PriceStrategyService {
                 setPriceStrategy(defaultPriceStrategy);
                 break;
             case PRICE_PER_TYPE:
-                setPriceStrategy(specialPricePerTypeStrategy);
+                setPriceStrategy(pricePerTypeStrategy);
                 break;
         }
     }

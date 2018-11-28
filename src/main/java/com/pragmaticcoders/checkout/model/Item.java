@@ -8,7 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @ApiModel
@@ -77,12 +77,13 @@ public class Item {
     }
 
     @Override
-    public String toString() {
-        return "Item{" +
-                "id=" + id +
-                ", type='" + type + '\'' +
-                ", price=" + price +
-                ", basketItems=" + basketItems +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Item)) return false;
+        Item item = (Item) o;
+        return Objects.equals(getId(), item.getId()) &&
+                Objects.equals(getType(), item.getType()) &&
+                Objects.equals(getPrice(), item.getPrice()) &&
+                Objects.equals(getBasketItems(), item.getBasketItems());
     }
 }

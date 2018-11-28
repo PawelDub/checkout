@@ -3,29 +3,23 @@ package com.pragmaticcoders.checkout;
 import com.pragmaticcoders.checkout.exceptions.BasketStatusException;
 import com.pragmaticcoders.checkout.model.Basket;
 import com.pragmaticcoders.checkout.model.BasketItem;
-import com.pragmaticcoders.checkout.model.Discount;
 import com.pragmaticcoders.checkout.model.Item;
-import com.pragmaticcoders.checkout.repository.BasketRepository;
-import com.pragmaticcoders.checkout.repository.DiscountRepository;
+import com.pragmaticcoders.checkout.model.PriceDiscount;
+import com.pragmaticcoders.checkout.repository.PriceDiscountRepository;
+import com.pragmaticcoders.checkout.service.BasketItemService;
 import com.pragmaticcoders.checkout.service.BasketService;
 import com.pragmaticcoders.checkout.service.ItemService;
 import com.pragmaticcoders.checkout.service.PriceDiscountService;
 import com.pragmaticcoders.checkout.service.discount.price.PriceStrategyService;
 import com.pragmaticcoders.checkout.service.discount.price.Strategy;
 import javassist.NotFoundException;
-import org.checkerframework.checker.units.qual.A;
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,7 +29,6 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class BasketTest {
 
@@ -44,33 +37,41 @@ public class BasketTest {
     @Autowired
     BasketService basketService;
     @Autowired
-    BasketRepository basketRepository;
-    @Autowired
     PriceDiscountService priceDiscountService;
     @Autowired
-    DiscountRepository discountRepository;
+    PriceDiscountRepository priceDiscountRepository;
     @Autowired
     ItemService itemService;
+
+    @Autowired
+    BasketItemService basketItemService;
 
     @Test
     @DisplayName("total price should be calculated correctly depends on price strategy")
     public void totalPrice() {
 
-        itemService.save(new Item("koszule", new BigDecimal(40)));
-        itemService.save(new Item("spodnie", new BigDecimal(10)));
-        itemService.save(new Item("buty", new BigDecimal(30)));
-        itemService.save(new Item("rekawiczki", new BigDecimal(25)));
-        itemService.save(new Item("kurtki", new BigDecimal(45)));
-        itemService.save(new Item("palta", new BigDecimal(80)));
+        List<Item> items = new ArrayList<>();
 
-        priceDiscountService.save(new Discount("koszule", 3, new BigDecimal(70)));
-        priceDiscountService.save(new Discount("spodnie", 2, new BigDecimal(15)));
-        priceDiscountService.save(new Discount("buty", 4, new BigDecimal(60)));
-        priceDiscountService.save(new Discount("rekawiczki", 2, new BigDecimal(40)));
+        items.add(new Item("koszule", new BigDecimal(40)));
+        items.add(new Item("spodnie", new BigDecimal(10)));
+        items.add(new Item("buty", new BigDecimal(30)));
+        items.add(new Item("rekawiczki", new BigDecimal(25)));
+        items.add(new Item("kurtki", new BigDecimal(45)));
+        items.add(new Item("palta", new BigDecimal(80)));
+
+        items.forEach(item -> itemService.save(item));
+
+        List<PriceDiscount> discounts = new ArrayList<>();
+        discounts.add(new PriceDiscount("koszule", 3, new BigDecimal(70)));
+        discounts.add(new PriceDiscount("spodnie", 2, new BigDecimal(15)));
+        discounts.add(new PriceDiscount("buty", 4, new BigDecimal(60)));
+        discounts.add(new PriceDiscount("rekawiczki", 2, new BigDecimal(40)));
+
+        discounts.forEach(discount -> priceDiscountService.save(discount));
 
         Basket basket_1 = basketService.open();
 
-        List<Item> items = (List<Item>) itemService.findAll();
+        items = (List<Item>) itemService.findAll();
 
         BasketItem basketItem_1 = new BasketItem();
         basketItem_1.setItem(items.get(0));
@@ -87,8 +88,8 @@ public class BasketTest {
         BasketItem basketItem_4 = new BasketItem();
         basketItem_4.setItem(items.get(5));
         basketItem_4.setQuantity(2);                // 2 * 80 = 160                    // default 2 * 80 = 160
-                                                    //--------------------------------------------------------
-                                                    // total = 485            // default total: 590
+        //--------------------------------------------------------
+        // total = 485            // default total: 590
         basket_1.addBasketItem(basketItem_1);
         basket_1.addBasketItem(basketItem_2);
         basket_1.addBasketItem(basketItem_3);
@@ -107,6 +108,139 @@ public class BasketTest {
 
         BigDecimal totalPriceDefault = basketService.countTotalPrice(basket_1).getTotalPrice();
         assertThat(totalPriceDefault).isEqualTo(new BigDecimal("590.00"));
+
+        items.forEach(item -> itemService.delete(item.getId()));
+        discounts.forEach(discount -> priceDiscountService.delete(discount));
+
+        items.forEach(item -> {
+            itemService.delete(item.getId());
+        });
+
+        discounts.forEach(discount -> {
+            priceDiscountRepository.deleteById(discount.getId());
+        });
+
+        try {
+            basketService.delete(basket_1.getId());
+        } catch (BasketStatusException e) {
+            e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    @DisplayName("should update basket correctly")
+    public void updateBasket() {
+        Item item_1 = new Item("koszule", new BigDecimal(40));
+        Item item_2 = new Item("spodnie", new BigDecimal(10));
+        itemService.save(item_1);
+        itemService.save(item_2);
+
+        Basket basket = basketService.open();
+
+        BasketItem basketItem_1 = new BasketItem(basket, item_1, 3);
+        basket.addBasketItem(basketItem_1);
+
+        try {
+            basket = basketService.update(basket);
+        } catch (BasketStatusException e) {
+            e.printStackTrace();
+        }
+
+        List<BasketItem> basketItems = (List<BasketItem>) basketItemService.findAllByBasketId(basket.getId());
+
+        assertThat(basketItems.size()).isEqualTo(1);
+        assertThat(basket.getBasketItems().size()).isEqualTo(1);
+        assertThat(basketItems.get(0).getBasket().getId()).isEqualTo(basket.getId());
+        assertThat(basketItems.get(0).getItem().getId()).isEqualTo(item_1.getId());
+        assertThat(basketItems.get(0).getQuantity()).isEqualTo(3);
+
+        BasketItem basketItem_2 = new BasketItem(basket, item_2, 2);
+
+        Set<BasketItem> basketItemSet = new HashSet<>();
+
+        basketItemSet.add(basketItems.get(0));
+        basketItemSet.add(basketItem_2);
+
+        basket.setBasketItems(basketItemSet);
+
+        assertThat(basket.getBasketItems().size()).isEqualTo(2);
+
+        try {
+            basket = basketService.update(basket);
+        } catch (BasketStatusException e) {
+            e.printStackTrace();
+        }
+
+        basketItems = (List<BasketItem>) basketItemService.findAllByBasketId(basket.getId());
+
+        assertThat(basketItems.size()).isEqualTo(2);
+        assertThat(basketItems.get(0).getBasket().getId()).isEqualTo(basket.getId());
+        assertThat(basketItems.get(0).getItem().getId()).isEqualTo(item_1.getId());
+        assertThat(basketItems.get(0).getQuantity()).isEqualTo(3);
+        assertThat(basketItems.get(1).getBasket().getId()).isEqualTo(basket.getId());
+        assertThat(basketItems.get(1).getItem().getId()).isEqualTo(item_2.getId());
+        assertThat(basketItems.get(1).getQuantity()).isEqualTo(2);
+
+
+        basketItem_1 = basketItems.get(0);
+        basketItem_2 = basketItems.get(1);
+        basketItem_1.setQuantity(8);
+        basketItem_2.setQuantity(5);
+
+        basketItemSet = new HashSet<>();
+        basketItemSet.add(basketItem_1);
+        basketItemSet.add(basketItem_2);
+
+        basket.setBasketItems(basketItemSet);
+
+        try {
+            basket = basketService.update(basket);
+        } catch (BasketStatusException e) {
+            e.printStackTrace();
+        }
+
+        basketItems = (List<BasketItem>) basketItemService.findAllByBasketId(basket.getId());
+
+        assertThat(basketItems.size()).isEqualTo(2);
+        assertThat(basketItems.get(0).getBasket().getId()).isEqualTo(basket.getId());
+        assertThat(basketItems.get(0).getItem().getId()).isEqualTo(item_1.getId());
+        assertThat(basketItems.get(0).getQuantity()).isEqualTo(8);
+        assertThat(basketItems.get(1).getBasket().getId()).isEqualTo(basket.getId());
+        assertThat(basketItems.get(1).getItem().getId()).isEqualTo(item_2.getId());
+        assertThat(basketItems.get(1).getQuantity()).isEqualTo(5);
+
+        basketItemSet.remove(basketItem_1);
+
+        basket.setBasketItems(basketItemSet);
+
+        try {
+            basket = basketService.update(basket);
+        } catch (BasketStatusException e) {
+            e.printStackTrace();
+        }
+
+        basketItems = (List<BasketItem>) basketItemService.findAllByBasketId(basket.getId());
+
+        assertThat(basketItems.size()).isEqualTo(1);
+        assertThat(basketItems.get(0).getBasket().getId()).isEqualTo(basket.getId());
+        assertThat(basketItems.get(0).getItem().getId()).isEqualTo(item_2.getId());
+        assertThat(basketItems.get(0).getItem().getType()).isEqualTo(item_2.getType());
+        assertThat(basketItems.get(0).getQuantity()).isEqualTo(5);
+
+        basketItemService.deleteById(basketItems.get(0).getBasketItemId());
+        itemService.delete(item_1.getId());
+        itemService.delete(item_2.getId());
+
+        try {
+            basketService.delete(basket.getId());
+        } catch (BasketStatusException e) {
+            e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Test
@@ -135,8 +269,6 @@ public class BasketTest {
             e.printStackTrace();
         }
 
-
-            basketService.findById(basket.getId());
         assertThat(basketService.findById(basket.getId())).isEmpty();
 
     }
@@ -155,10 +287,11 @@ public class BasketTest {
         });
 
         assertThat(exception.getMessage()).isEqualTo("CLOSED basket can not be deleted");
+
     }
 
     @Test
-    @DisplayName("should not found basket")
+    @DisplayName("should not found not existed basket")
     public void notFoundBasket() {
         Throwable exception = assertThrows(NotFoundException.class, () -> {
             basketService.delete(5454654654L);
@@ -166,6 +299,5 @@ public class BasketTest {
 
         assertThat(exception.getMessage()).isEqualTo("User not found");
     }
-
 
 }
