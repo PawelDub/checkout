@@ -1,0 +1,44 @@
+PUT localhost:8080/basket/update
+
+Content-Type: application/json
+
+{
+  "id": 1,
+  "status": "NEW",
+   "totalPrice": 0.00,
+  "basketItems": [
+    {
+    	"basket": {
+      	 "id": 1,
+		 "status": "NEW",
+		 "totalPrice": 0,
+		  "basketItems": []
+      },
+      "item": {
+       "id": 1,
+        "type": "koszule",
+        "price": 40,
+        "basketItems": []
+        },
+      "quantity": 3
+    },
+     {
+    	"basket": {
+      	 "id": 1,
+		 "status": "NEW",
+		 "totalPrice": 0,
+		  "basketItems": []
+      },
+      "item": {
+        "id": 2,
+        "type": "spodnie",
+        "price": 10,
+        "basketItems": []
+        },
+      "quantity": 5
+    }
+  ]
+
+}
+
+###

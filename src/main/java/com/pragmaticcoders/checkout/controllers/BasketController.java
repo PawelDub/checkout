@@ -2,6 +2,7 @@ package com.pragmaticcoders.checkout.controllers;
 
 import com.pragmaticcoders.checkout.exceptions.BasketStatusException;
 import com.pragmaticcoders.checkout.model.Basket;
+import com.pragmaticcoders.checkout.model.ResponseTotalPrice;
 import com.pragmaticcoders.checkout.service.BasketService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -68,7 +69,7 @@ public class BasketController {
             @ApiResponse(code = 200, message = "Successfully close basket", response = BigDecimal.class),
     })
     @RequestMapping(value = "/close", method = RequestMethod.POST)
-    public BigDecimal closeBasket(@RequestBody @Valid Basket basket) throws BasketStatusException, NotFoundException {
+    public ResponseTotalPrice closeBasket(@RequestBody @Valid Basket basket) throws BasketStatusException, NotFoundException {
         return basketService.close(basket);
     }
 

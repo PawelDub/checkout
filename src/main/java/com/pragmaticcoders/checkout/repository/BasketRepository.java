@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface BasketRepository extends CrudRepository<Basket, Long> {
 
@@ -17,4 +19,6 @@ public interface BasketRepository extends CrudRepository<Basket, Long> {
     @Query(value = "update basket set status = ? where basket_id = ?", nativeQuery = true)
     void updateStatus(String status,  Long basketId);
 
+    @Query(value = "select status from basket where basket_id = ?", nativeQuery = true)
+    Optional<Basket.BasketStatus> findStatusByBasketId(Long basketId);
 }

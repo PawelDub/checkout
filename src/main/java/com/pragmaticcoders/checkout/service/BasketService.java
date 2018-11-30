@@ -3,6 +3,7 @@ package com.pragmaticcoders.checkout.service;
 import com.pragmaticcoders.checkout.exceptions.BasketStatusException;
 import com.pragmaticcoders.checkout.model.Basket;
 import com.pragmaticcoders.checkout.model.BasketItem;
+import com.pragmaticcoders.checkout.model.ResponseTotalPrice;
 import com.pragmaticcoders.checkout.repository.BasketRepository;
 import com.pragmaticcoders.checkout.service.discount.price.PriceStrategyService;
 import javassist.NotFoundException;
@@ -46,6 +47,10 @@ public class BasketService {
 
     @Transactional
     public Basket update(Basket basket) throws BasketStatusException {
+        if(!basket.getStatus().equals(basketRepository.findStatusByBasketId(basket.getId()).get())) {
+            throw new BasketStatusException("Incorrect basket status");
+        }
+
         if (basket.getStatus().equals(Basket.BasketStatus.NEW)) {
             logger.info("New Basket {} status was updated to ACTIVE status", basket.toString());
             basket.setStatus(Basket.BasketStatus.ACTIVE);
@@ -81,12 +86,13 @@ public class BasketService {
     }
 
     @Transactional
-    public BigDecimal close(Basket basket) throws BasketStatusException, NotFoundException {
+    public ResponseTotalPrice close(Basket basket) throws BasketStatusException, NotFoundException {
         basket = countTotalPrice(basket);
         this.update(basket);
         this.updateStatus(Basket.BasketStatus.CLOSED.toString(), basket.getId());
+
         logger.info("Basket {} was closed", basket.toString());
-        return basket.getTotalPrice();
+        return new ResponseTotalPrice(basket.getTotalPrice());
     }
 
     public void deleteById(Long basketId) throws BasketStatusException, NotFoundException {
