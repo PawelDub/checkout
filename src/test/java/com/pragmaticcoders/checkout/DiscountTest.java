@@ -13,6 +13,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("Discount tests")
 @SpringBootTest
 public class DiscountTest {
 
@@ -32,7 +33,7 @@ public class DiscountTest {
         assertThat(discountSaved.getType()).isEqualTo(discount.getType());
         assertThat(discountSaved.getQuantity()).isEqualTo(discount.getQuantity());
         assertThat(discountSaved.getPriceDiscount()).isEqualTo(discount.getPriceDiscount());
-        priceDiscountService.delete(discount);
+        priceDiscountService.deleteById(discount.getId());
     }
 
     @Test
@@ -51,18 +52,18 @@ public class DiscountTest {
         assertThat(discountSaved.getType()).isEqualTo(discount.getType());
         assertThat(discountSaved.getQuantity()).isEqualTo(discount.getQuantity());
         assertThat(discountSaved.getPriceDiscount()).isEqualTo(discount.getPriceDiscount());
-        priceDiscountService.delete(discount);
+        priceDiscountService.deleteById(discount.getId());
     }
 
     @Test
-    @DisplayName("should delete discount correctly")
+    @DisplayName("should deleteById discount correctly")
     public  void deleteItem() {
 
         PriceDiscount discount = new PriceDiscount("koszule", 3, new BigDecimal(70.00));
         PriceDiscount discountSaved = priceDiscountService.save(discount);
         assertThat(discountSaved.getType()).isEqualTo(discount.getType());
 
-        priceDiscountService.delete(discountSaved);
+        priceDiscountService.deleteById(discountSaved.getId());
 
         assertThat(priceDiscountRepository.findById(discountSaved.getId())).isEmpty();
     }

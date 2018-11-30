@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 @Table(name = "price_discount")
@@ -16,7 +17,8 @@ public class PriceDiscount {
     @Column(name = "discount_id")
     @ApiModelProperty(position = 1, dataType = "Long", required = true, notes = "The database generated product ID")
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @SequenceGenerator(name = "SEQ_PRICE_DISCOUNT", sequenceName = "SEQ_PRICE_DISCOUNT", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PRICE_DISCOUNT")
     private Long id;
 
     @Column(name = "type")
@@ -75,4 +77,24 @@ public class PriceDiscount {
         this.priceDiscount = priceDiscount;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PriceDiscount)) return false;
+        PriceDiscount discount = (PriceDiscount) o;
+        return getQuantity() == discount.getQuantity() &&
+                Objects.equals(getId(), discount.getId()) &&
+                Objects.equals(getType(), discount.getType()) &&
+                Objects.equals(getPriceDiscount(), discount.getPriceDiscount());
+    }
+
+    @Override
+    public String toString() {
+        return "PriceDiscount{" +
+                "id=" + id +
+                ", type='" + type + '\'' +
+                ", quantity=" + quantity +
+                ", priceDiscount=" + priceDiscount +
+                '}';
+    }
 }

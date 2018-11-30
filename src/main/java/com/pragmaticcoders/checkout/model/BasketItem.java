@@ -11,14 +11,14 @@ public class BasketItem {
 
     @ApiModelProperty(position = 1, dataType = "Long", required = true, notes = "The basket Item Id generated product ID")
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "SEQ_BASKET_ITEM", sequenceName = "SEQ_BASKET_ITEM", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BASKET_ITEM")
     @Column(name = "basket_item_id")
     private Long basketItemId;
 
     @ApiModelProperty(position = 2, dataType = "Basket", required = true, notes = "basket")
-    @ManyToOne
-    @JoinColumn(name = "basket_id")
-    private Basket basket;
+    @Column(name = "basket_id")
+    private Long basketId;
 
     @ApiModelProperty(position = 3, dataType = "Item", required = true, notes = "item")
     @ManyToOne
@@ -29,8 +29,8 @@ public class BasketItem {
     @ApiModelProperty(position = 4, dataType = "Set<BasketItem>", required = true, notes = "basket items")
     private int quantity;
 
-    public BasketItem(Basket basket, Item item, int quantity) {
-        this.basket = basket;
+    public BasketItem(Long basketId, Item item, int quantity) {
+        this.basketId = basketId;
         this.item = item;
         this.quantity = quantity;
     }
@@ -42,16 +42,12 @@ public class BasketItem {
         return basketItemId;
     }
 
-    public void setBasketItemId(Long basketItemId) {
-        this.basketItemId = basketItemId;
+    public Long getBasketId() {
+        return basketId;
     }
 
-    public Basket getBasket() {
-        return basket;
-    }
-
-    public void setBasket(Basket basket) {
-        this.basket = basket;
+    public void setBasketId(Long basketId) {
+        this.basketId = basketId;
     }
 
     public Item getItem() {
@@ -71,14 +67,29 @@ public class BasketItem {
     }
 
     @Override
+    public String toString() {
+        return "BasketItem{" +
+                "basketItemId=" + basketItemId +
+                ", basketId=" + basketId +
+                ", item=" + item +
+                ", quantity=" + quantity +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof BasketItem)) return false;
         BasketItem that = (BasketItem) o;
         return getQuantity() == that.getQuantity() &&
                 Objects.equals(getBasketItemId(), that.getBasketItemId()) &&
-                Objects.equals(getBasket(), that.getBasket()) &&
+                Objects.equals(getBasketId(), that.getBasketId()) &&
                 Objects.equals(getItem(), that.getItem());
     }
 
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getBasketItemId(), getBasketId(), getItem(), getQuantity());
+    }
 }

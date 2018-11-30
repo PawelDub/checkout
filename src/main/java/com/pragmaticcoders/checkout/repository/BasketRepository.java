@@ -12,4 +12,9 @@ public interface BasketRepository extends CrudRepository<Basket, Long> {
     @Modifying
     @Query(value = "delete from basket where basket_id = ?", nativeQuery = true)
     void deleteById(Long itemId);
+
+    @Modifying
+    @Query(value = "update basket set status = ? where basket_id = ?", nativeQuery = true)
+    void updateStatus(String status,  Long basketId);
+
 }

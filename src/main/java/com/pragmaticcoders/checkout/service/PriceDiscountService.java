@@ -11,8 +11,6 @@ import java.util.Map;
 @Service
 public class PriceDiscountService {
 
-    //TODO Logger
-
     private PriceDiscountRepository discountRepository;
 
     @Autowired
@@ -28,8 +26,8 @@ public class PriceDiscountService {
         return discountRepository.save(discount);
     }
 
-    public void delete(PriceDiscount discount) {
-        discountRepository.delete(discount);
+    public void deleteById(Long id) {
+        discountRepository.deleteById(id);
     }
 
     public Iterable<PriceDiscount> findAll(){

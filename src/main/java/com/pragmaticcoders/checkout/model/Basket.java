@@ -7,9 +7,7 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @ApiModel
 @Entity
@@ -23,7 +21,8 @@ public class Basket {
     @Column(name = "basket_id")
     @ApiModelProperty(position = 1, dataType = "Long", required = true, notes = "The database generated product ID")
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "SEQ_BASKET", sequenceName = "SEQ_BASKET", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BASKET")
     private Long id;
 
     @Column(name = "status")
@@ -37,9 +36,9 @@ public class Basket {
     @ApiModelProperty(position = 3, dataType = "BigDecimal", required = true, notes = "Total price")
     private BigDecimal totalPrice;
 
-    @OneToMany(mappedBy = "basket", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @ApiModelProperty(position = 3, dataType = "Set<BasketItem>", required = true, notes = "basket items")
-    private Set<BasketItem> basketItems = new HashSet<BasketItem>();
+    @Transient
+    @ApiModelProperty(position = 4, dataType = "Set<BasketItem>", required = true, notes = "basket items")
+    private List<BasketItem> basketItems = new ArrayList<>();
 
     public Basket(@Valid BasketStatus status, @Valid BigDecimal totalPrice) {
         this.status = status;
@@ -73,16 +72,27 @@ public class Basket {
         this.totalPrice = totalPrice;
     }
 
-    public Set<BasketItem> getBasketItems() {
+    public List<BasketItem> getBasketItems() {
         return basketItems;
     }
 
-    public void setBasketItems(Set<BasketItem> basketItems) {
+    public void setBasketItems(List<BasketItem> basketItems) {
         this.basketItems = basketItems;
     }
 
     public void addBasketItem(BasketItem basketItem) {
         this.basketItems.add(basketItem);
+    }
+
+
+    @Override
+    public String toString() {
+        return "Basket{" +
+                "id=" + id +
+                ", status=" + status +
+                ", totalPrice=" + totalPrice +
+                ", basketItems=" + basketItems +
+                '}';
     }
 
     @Override
@@ -94,5 +104,11 @@ public class Basket {
                 getStatus() == basket.getStatus() &&
                 Objects.equals(getTotalPrice(), basket.getTotalPrice()) &&
                 Objects.equals(getBasketItems(), basket.getBasketItems());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getId(), getStatus(), getTotalPrice(), getBasketItems());
     }
 }

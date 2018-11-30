@@ -5,6 +5,9 @@ import com.pragmaticcoders.checkout.repository.BasketItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Optional;
+
 @Service
 public class BasketItemService {
 
@@ -27,11 +30,11 @@ public class BasketItemService {
         basketItemRepository.deleteById(basketItemId);
     }
 
-    public Iterable<BasketItem> findAllByBasketId(Long basketId) {
+    public Collection<BasketItem> findAllByBasketId(Long basketId) {
         return basketItemRepository.findAllByBasketId(basketId);
     }
 
-    public BasketItem findByBasketIdAndItemId(Long basketId, Long itemId) {
+    public Optional<BasketItem> findByBasketIdAndItemId(Long basketId, Long itemId) {
         return basketItemRepository.findByBasketIdAndItemId(basketId, itemId);
     }
 }

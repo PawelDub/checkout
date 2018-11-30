@@ -9,7 +9,6 @@ import java.util.Optional;
 
 @Service
 public class ItemService  {
-    //TODO Logger
 
     private ItemRepository itemRepository;
 
@@ -26,11 +25,11 @@ public class ItemService  {
         return itemRepository.save(item);
     }
 
-    public void delete(Long itemId) {
+    public void deleteById(Long itemId) {
         itemRepository.deleteById(itemId);
     }
 
-    public Optional<Item> findItemsByType(String type) {
+    public Optional<Item> findItemByType(String type) {
         return itemRepository.findItemByType(type);
     }
 

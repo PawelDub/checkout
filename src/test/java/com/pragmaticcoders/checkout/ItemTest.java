@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("Item tests")
 @SpringBootTest
 public class ItemTest {
 
@@ -35,7 +35,7 @@ public class ItemTest {
         Item item = new Item("koszule", new BigDecimal(40));
         Item savedItem = itemService.save(item);
         assertThat(savedItem.getType()).isEqualTo(itemRepository.findById(savedItem.getId()).get().getType());
-        itemService.delete(item.getId());
+        itemService.deleteById(item.getId());
     }
 
     @Test
@@ -50,18 +50,18 @@ public class ItemTest {
 
         savedItem = itemService.save(item);
         assertThat(savedItem.getType()).isEqualTo(item.getType());
-        itemService.delete(item.getId());
+        itemService.deleteById(item.getId());
     }
 
     @Test
-    @DisplayName("should delete item correctly")
+    @DisplayName("should deleteById item correctly")
     public  void deleteItem() {
 
         Item item = new Item("koszule", new BigDecimal(40));
         Item savedItem = itemService.save(item);
         assertThat(savedItem.getType()).isEqualTo(item.getType());
 
-        itemService.delete(savedItem.getId());
+        itemService.deleteById(savedItem.getId());
 
         assertThat(itemRepository.findById(savedItem.getId())).isEmpty();
     }
@@ -72,13 +72,13 @@ public class ItemTest {
 
         Item item_1 = new Item("koszule", new BigDecimal(40));
         Item item_2 = new Item("spodnie", new BigDecimal(30));
-        Item savedItem_1 = itemService.save(item_1);
-        Item savedItem_2 = itemService.save(item_2);
+        itemService.save(item_1);
+        itemService.save(item_2);
 
-        Optional<Item> itemByType = itemService.findItemsByType("koszule");
-        assertThat(itemByType.get().getType()).isEqualTo(item_1.getType());
-        itemService.delete(item_1.getId());
-        itemService.delete(item_2.getId());
+        Item itemByType = itemService.findItemByType("koszule").get();
+        assertThat(itemByType.getType()).isEqualTo(item_1.getType());
+        itemService.deleteById(item_1.getId());
+        itemService.deleteById(item_2.getId());
 
     }
 }

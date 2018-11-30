@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -19,11 +20,12 @@ public class Item {
     @Column(name = "item_id")
     @ApiModelProperty(position = 1, dataType = "Long", required = true, notes = "The database generated product ID")
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @SequenceGenerator(name = "SEQ_ITEM", sequenceName = "SEQ_ITEM", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_ITEM")
     private Long id;
 
     @Column(name = "type")
-    @NotNull(message = "Type can not be empty or null")
+    @NotEmpty(message = "Type can not be empty or null")
     @ApiModelProperty(position = 2, dataType = "String", required = true, notes = "type")
     private String type;
 
@@ -68,12 +70,13 @@ public class Item {
         this.price = price;
     }
 
-    public Set<BasketItem> getBasketItems() {
-        return basketItems;
-    }
-
-    public void setBasketItems(Set<BasketItem> basketItems) {
-        this.basketItems = basketItems;
+    @Override
+    public String toString() {
+        return "Item{" +
+                "id=" + id +
+                ", type='" + type + '\'' +
+                ", price=" + price +
+                '}';
     }
 
     @Override
@@ -83,7 +86,12 @@ public class Item {
         Item item = (Item) o;
         return Objects.equals(getId(), item.getId()) &&
                 Objects.equals(getType(), item.getType()) &&
-                Objects.equals(getPrice(), item.getPrice()) &&
-                Objects.equals(getBasketItems(), item.getBasketItems());
+                Objects.equals(getPrice(), item.getPrice());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getId(), getType(), getPrice());
     }
 }

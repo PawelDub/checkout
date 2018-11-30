@@ -15,9 +15,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 
+@DisplayName("Basket item tests")
 @SpringBootTest
 public class BasketItemTest {
 
@@ -39,18 +41,18 @@ public class BasketItemTest {
         Item item = new Item("koszule", new BigDecimal(40));
         itemService.save(item);
 
-        BasketItem basketItem = new BasketItem(basket, item, 8);
+        BasketItem basketItem = new BasketItem(basket.getId(), item, 8);
         BasketItem basketItemResponse = basketItemService.save(basketItem);
 
-        assertThat(basketItemResponse.getItem().getType()).isEqualTo(basketItem.getItem().getType());
-        assertThat(basketItemResponse.getItem().getPrice()).isEqualTo(basketItem.getItem().getPrice());
+        assertThat(basketItemResponse.getBasketId()).isEqualTo(basket.getId());
+        assertThat(basketItemResponse.getItem().getId()).isEqualTo(item.getId());
         assertThat(basketItemResponse.getQuantity()).isEqualTo(basketItem.getQuantity());
 
         basketItemService.deleteById(basketItem.getBasketItemId());
-        itemService.delete(item.getId());
+        itemService.deleteById(item.getId());
 
         try {
-            basketService.delete(basket.getId());
+            basketService.deleteById(basket.getId());
         } catch (BasketStatusException e) {
             e.printStackTrace();
         } catch (NotFoundException e) {
@@ -68,7 +70,7 @@ public class BasketItemTest {
         Item item = new Item("koszule", new BigDecimal(40));
         itemService.save(item);
 
-        BasketItem basketItem = new BasketItem(basket, item, 8);
+        BasketItem basketItem = new BasketItem(basket.getId(), item, 8);
 
         BasketItem basketItemResponse = basketItemService.save(basketItem);
 
@@ -80,10 +82,10 @@ public class BasketItemTest {
         assertThat(basketItemResponse.getQuantity()).isEqualTo(5);
 
         basketItemService.deleteById(basketItem.getBasketItemId());
-        itemService.delete(item.getId());
+        itemService.deleteById(item.getId());
 
         try {
-            basketService.delete(basket.getId());
+            basketService.deleteById(basket.getId());
         } catch (BasketStatusException e) {
             e.printStackTrace();
         } catch (NotFoundException e) {
@@ -103,8 +105,8 @@ public class BasketItemTest {
         itemService.save(item_1);
         itemService.save(item_2);
 
-        BasketItem basketItem_1 = new BasketItem(basket, item_1, 8);
-        BasketItem basketItem_2 = new BasketItem(basket, item_2, 8);
+        BasketItem basketItem_1 = new BasketItem(basket.getId(), item_1, 8);
+        BasketItem basketItem_2 = new BasketItem(basket.getId(), item_2, 8);
         basketItemService.save(basketItem_1);
         basketItemService.save(basketItem_2);
 
@@ -119,11 +121,11 @@ public class BasketItemTest {
         assertThat(basketItemList.size()).isEqualTo(1);
 
         basketItemService.deleteById(basketItem_2.getBasketItemId());
-        itemService.delete(item_1.getId());
-        itemService.delete(item_2.getId());
+        itemService.deleteById(item_1.getId());
+        itemService.deleteById(item_2.getId());
 
         try {
-            basketService.delete(basket.getId());
+            basketService.deleteById(basket.getId());
         } catch (BasketStatusException e) {
             e.printStackTrace();
         } catch (NotFoundException e) {
@@ -143,23 +145,23 @@ public class BasketItemTest {
         item_1 = itemService.save(item_1);
         item_2 = itemService.save(item_2);
 
-        BasketItem basketItem_1 = new BasketItem(basket, item_1, 8);
-        BasketItem basketItem_2 = new BasketItem(basket, item_2, 5);
+        BasketItem basketItem_1 = new BasketItem(basket.getId(), item_1, 8);
+        BasketItem basketItem_2 = new BasketItem(basket.getId(), item_2, 5);
         basketItemService.save(basketItem_1);
         basketItemService.save(basketItem_2);
 
-        BasketItem basketItem = basketItemService.findByBasketIdAndItemId(basket.getId(), item_1.getId());
+        Optional<BasketItem> basketItem = basketItemService.findByBasketIdAndItemId(basket.getId(), item_1.getId());
 
-        assertThat(basketItem.getBasket().getId()).isEqualTo(basket.getId());
-        assertThat(basketItem.getItem().getId()).isEqualTo(item_1.getId());
+        assertThat(basketItem.get().getBasketId()).isEqualTo(basket.getId());
+        assertThat(basketItem.get().getItem().getId()).isEqualTo(item_1.getId());
 
         basketItemService.deleteById(basketItem_1.getBasketItemId());
         basketItemService.deleteById(basketItem_2.getBasketItemId());
-        itemService.delete(item_1.getId());
-        itemService.delete(item_2.getId());
+        itemService.deleteById(item_1.getId());
+        itemService.deleteById(item_2.getId());
 
         try {
-            basketService.delete(basket.getId());
+            basketService.deleteById(basket.getId());
         } catch (BasketStatusException e) {
             e.printStackTrace();
         } catch (NotFoundException e) {
