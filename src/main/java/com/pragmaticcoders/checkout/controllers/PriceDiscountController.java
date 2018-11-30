@@ -18,8 +18,6 @@ import javax.validation.Valid;
 @RequestMapping("/discount/price")
 public class PriceDiscountController {
 
-    //TODO exceptions handler
-
     private PriceDiscountService priceDiscountService;
 
     @Autowired
@@ -60,7 +58,7 @@ public class PriceDiscountController {
             @ApiResponse(code = 200, message = "Successfully returns all price discounts"),
     })
     @RequestMapping(value = "/all", method = RequestMethod.GET)
-    public Iterable<PriceDiscount> findAllItem() {
+    public Iterable<PriceDiscount> findAllDiscount() {
         return priceDiscountService.findAll();
     }
 

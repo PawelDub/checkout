@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/strategy/price")
 public class PriceStrategyController {
 
-    //TODO exceptions handler
-
     private PriceStrategyService priceStrategyService;
 
     @Autowired

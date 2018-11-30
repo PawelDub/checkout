@@ -19,8 +19,6 @@ import java.util.Optional;
 @RequestMapping("/item")
 public class ItemController {
 
-    //TODO exceptions handler
-
     private ItemService itemService;
 
     public ItemController() {
@@ -66,7 +64,7 @@ public class ItemController {
             @ApiResponse(code = 200, message = "Successfully deleteById searched item"),
     })
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public void saveItem(@ApiParam("Id of the item to be obtained. Cannot be empty.")
+    public void deleteItem(@ApiParam("Id of the item to be obtained. Cannot be empty.")
             @PathVariable Long id) {
         itemService.deleteById(id);
     }

@@ -25,8 +25,6 @@ import java.math.BigDecimal;
 @RequestMapping("/basket")
 public class BasketController {
 
-    //TODO exceptions handler
-
     private BasketService basketService;
 
     public BasketController() {
