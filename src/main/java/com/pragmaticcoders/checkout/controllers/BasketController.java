@@ -58,7 +58,7 @@ public class BasketController {
             @ApiResponse(code = 200, message = "Successfully update basket", response = Basket.class),
     })
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public Basket updateBasket(@RequestBody @Valid Basket basket) throws BasketStatusException {
+    public Basket updateBasket(@RequestBody @Valid Basket basket) throws BasketStatusException, NotFoundException {
         return basketService.update(basket);
     }
 

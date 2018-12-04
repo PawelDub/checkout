@@ -14,8 +14,4 @@ public interface ItemRepository extends CrudRepository<Item, Long> {
     Optional<Item> findItemByType(String type);
 
     Optional<Item> findById(Long id);
-
-    @Modifying
-    @Query(value = "delete from item where item_id = ?", nativeQuery = true)
-    void deleteById(Long itemId);
 }

@@ -1,6 +1,7 @@
 package com.pragmaticcoders.checkout.repository;
 
 import com.pragmaticcoders.checkout.model.Basket;
+import com.pragmaticcoders.checkout.model.BasketStatus;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -20,5 +21,5 @@ public interface BasketRepository extends CrudRepository<Basket, Long> {
     void updateStatus(String status,  Long basketId);
 
     @Query(value = "select status from basket where basket_id = ?", nativeQuery = true)
-    Optional<Basket.BasketStatus> findStatusByBasketId(Long basketId);
+    Optional<BasketStatus> findStatusByBasketId(Long basketId);
 }

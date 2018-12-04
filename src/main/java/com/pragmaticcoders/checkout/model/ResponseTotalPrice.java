@@ -10,6 +10,9 @@ public class ResponseTotalPrice {
         this.totalPrice = totalPrice;
     }
 
+    public ResponseTotalPrice() {
+    }
+
     public BigDecimal getTotalPrice() {
         return totalPrice;
     }

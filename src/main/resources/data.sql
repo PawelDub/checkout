@@ -65,7 +65,6 @@ ALTER TABLE price_discount
 -- insert into item values (5, 'kurtki', 45);
 -- insert into item values (6, 'palta', 80);
 --
---
 -- insert into price_discount values (1, 'koszule', 3, 70.00);
 -- insert into price_discount values (2, 'spodnie', 2, 15);
 -- insert into price_discount values (3, 'buty', 4, 60);

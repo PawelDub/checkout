@@ -7,6 +7,9 @@ mvn spring-boot:run
 Run unit tests:
 mvn clean test
 
+Run integration tests:
+mvn clean verify
+
 Checkout API documentation is provided by swagger and available after run project on URL: 
 host:port/swagger-ui.html  (e.g: localhost:8080/swagger-ui.html)
 

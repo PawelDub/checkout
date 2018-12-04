@@ -34,13 +34,13 @@ public class PricePerTypeStrategy implements PriceStrategy {
         for (BasketItem basketItem : basket.getBasketItems()) {
             Item item = basketItem.getItem();
             if (discountMap.containsKey(item.getType()) && basketItem.getQuantity() >= discountMap.get(item.getType()).getQuantity()) {
-                int quantityDiscounts = basketItem.getQuantity() / discountMap.get(item.getType()).getQuantity();
-                int quantityNotDiscounted = basketItem.getQuantity() % discountMap.get(item.getType()).getQuantity();
+                int discountsQuantity = basketItem.getQuantity() / discountMap.get(item.getType()).getQuantity();
+                int notDiscountedQuantity = basketItem.getQuantity() % discountMap.get(item.getType()).getQuantity();
 
-                finalPrice += discountMap.get(item.getType()).getPriceDiscount().multiply(BigDecimal.valueOf(quantityDiscounts)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+                finalPrice += discountMap.get(item.getType()).getPriceDiscount().multiply(BigDecimal.valueOf(discountsQuantity)).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-                if (quantityNotDiscounted != 0) {
-                    finalPrice += item.getPrice().multiply(BigDecimal.valueOf(quantityNotDiscounted)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+                if (notDiscountedQuantity != 0) {
+                    finalPrice += item.getPrice().multiply(BigDecimal.valueOf(notDiscountedQuantity)).setScale(2, RoundingMode.HALF_UP).doubleValue();
                 }
             } else {
                 finalPrice += item.getPrice().multiply(BigDecimal.valueOf(basketItem.getQuantity())).setScale(2, RoundingMode.HALF_UP).doubleValue();

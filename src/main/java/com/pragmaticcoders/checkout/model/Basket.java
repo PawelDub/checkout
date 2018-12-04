@@ -14,10 +14,6 @@ import java.util.*;
 @Table(name = "basket")
 public class Basket {
 
-    public enum BasketStatus {
-        NEW, ACTIVE, CLOSED, CANCELED
-    }
-
     @Column(name = "basket_id")
     @ApiModelProperty(position = 1, dataType = "Long", required = true, notes = "The database generated product ID")
     @Id

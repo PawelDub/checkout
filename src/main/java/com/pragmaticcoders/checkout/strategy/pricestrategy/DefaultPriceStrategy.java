@@ -16,15 +16,14 @@ public class DefaultPriceStrategy implements PriceStrategy {
 
     @Override
     public BigDecimal calculationFinalPrice(Basket basket) {
-        Double finalPrice = new Double("0.00");
-        for (BasketItem basketItem : basket.getBasketItems()) {
-            if (basketItem.getItem() != null) {
-                finalPrice += basketItem.getItem().getPrice().multiply(BigDecimal.valueOf(basketItem.getQuantity())).setScale(2, RoundingMode.HALF_UP).doubleValue();
-                logger.info("finalPrice ============== {} ", finalPrice);
-            }
-        }
+        final Double[] finalPrice = {new Double("0.00")};
 
-        logger.info("Default price strategy: Final price: {}", finalPrice);
-        return new BigDecimal(finalPrice).setScale(2, RoundingMode.HALF_UP);
+        basket.getBasketItems().stream().filter(basketItem -> basketItem.getItem() != null).forEach(basketItem -> {
+            finalPrice[0] += basketItem.getItem().getPrice().multiply(BigDecimal.valueOf(basketItem.getQuantity())).setScale(2, RoundingMode.HALF_UP).doubleValue();
+            logger.info("finalPrice ============== {} ", finalPrice[0]);
+        });
+
+        logger.info("Default price strategy: Final price: {}", finalPrice[0]);
+        return new BigDecimal(finalPrice[0]).setScale(2, RoundingMode.HALF_UP);
     }
 }
