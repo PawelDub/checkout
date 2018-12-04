@@ -1,4 +1,4 @@
-package com.pragmaticcoders.checkout;
+package com.pragmaticcoders.checkout.test.unittest;
 
 import com.pragmaticcoders.checkout.model.PriceDiscount;
 import com.pragmaticcoders.checkout.repository.PriceDiscountRepository;
@@ -69,7 +69,7 @@ public class DiscountTest {
     }
 
     @Test
-    @DisplayName("should get all discount")
+    @DisplayName("should get all discounts")
     public  void findItemByType() {
 
         PriceDiscount discount_1 = new PriceDiscount("koszule", 3, new BigDecimal(70.00));

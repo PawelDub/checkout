@@ -1,4 +1,4 @@
-package com.pragmaticcoders.checkout;
+package com.pragmaticcoders.checkout.test.unittest;
 
 import com.pragmaticcoders.checkout.exceptions.BasketStatusException;
 import com.pragmaticcoders.checkout.model.Basket;
@@ -51,14 +51,6 @@ public class BasketItemTest {
         basketItemService.deleteById(basketItem.getBasketItemId());
         itemService.deleteById(item.getId());
 
-        try {
-            basketService.deleteById(basket.getId());
-        } catch (BasketStatusException e) {
-            e.printStackTrace();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Test
@@ -69,6 +61,8 @@ public class BasketItemTest {
 
         Item item = new Item("koszule", new BigDecimal(40));
         itemService.save(item);
+        Item item_2 = new Item("kurtki", new BigDecimal(30.00));
+        itemService.save(item_2);
 
         BasketItem basketItem = new BasketItem(basket.getId(), item, 8);
 
@@ -77,20 +71,16 @@ public class BasketItemTest {
         assertThat(basketItemResponse.getQuantity()).isEqualTo(8);
 
         basketItem.setQuantity(5);
+        basketItem.setItem(item_2);
         basketItemResponse = basketItemService.save(basketItem);
 
         assertThat(basketItemResponse.getQuantity()).isEqualTo(5);
+        assertThat(basketItemResponse.getItem().getType()).isEqualTo("kurtki");
+        assertThat(basketItemResponse.getItem().getPrice()).isEqualTo(new BigDecimal("30.00"));
 
         basketItemService.deleteById(basketItem.getBasketItemId());
         itemService.deleteById(item.getId());
-
-        try {
-            basketService.deleteById(basket.getId());
-        } catch (BasketStatusException e) {
-            e.printStackTrace();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
+        itemService.deleteById(item_2.getId());
 
     }
 
@@ -124,14 +114,6 @@ public class BasketItemTest {
         itemService.deleteById(item_1.getId());
         itemService.deleteById(item_2.getId());
 
-        try {
-            basketService.deleteById(basket.getId());
-        } catch (BasketStatusException e) {
-            e.printStackTrace();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Test
@@ -159,14 +141,6 @@ public class BasketItemTest {
         basketItemService.deleteById(basketItem_2.getBasketItemId());
         itemService.deleteById(item_1.getId());
         itemService.deleteById(item_2.getId());
-
-        try {
-            basketService.deleteById(basket.getId());
-        } catch (BasketStatusException e) {
-            e.printStackTrace();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
 
     }
 

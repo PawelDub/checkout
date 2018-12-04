@@ -1,4 +1,4 @@
-package com.pragmaticcoders.checkout;
+package com.pragmaticcoders.checkout.test.unittest;
 
 import com.pragmaticcoders.checkout.model.Item;
 import com.pragmaticcoders.checkout.repository.ItemRepository;
@@ -54,7 +54,7 @@ public class ItemTest {
     }
 
     @Test
-    @DisplayName("should deleteById item correctly")
+    @DisplayName("should delete item correctly")
     public  void deleteItem() {
 
         Item item = new Item("koszule", new BigDecimal(40));

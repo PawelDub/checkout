@@ -1,10 +1,7 @@
-package com.pragmaticcoders.checkout;
+package com.pragmaticcoders.checkout.test.unittest;
 
 import com.pragmaticcoders.checkout.exceptions.BasketStatusException;
-import com.pragmaticcoders.checkout.model.Basket;
-import com.pragmaticcoders.checkout.model.BasketItem;
-import com.pragmaticcoders.checkout.model.Item;
-import com.pragmaticcoders.checkout.model.PriceDiscount;
+import com.pragmaticcoders.checkout.model.*;
 import com.pragmaticcoders.checkout.repository.PriceDiscountRepository;
 import com.pragmaticcoders.checkout.service.BasketItemService;
 import com.pragmaticcoders.checkout.service.BasketService;
@@ -91,7 +88,7 @@ public class BasketTest {
         basketItem_4.setBasketId(basket_1.getId());
         basketItem_4.setQuantity(2);                // 2 * 80 = 160                    // default 2 * 80 = 160
         //-------------------------------------------------------------------------------------------------------
-                                                    // total = 485                     // default total: 590
+        // total = 485                     // default total: 590
         basket_1.addBasketItem(basketItem_1);
         basket_1.addBasketItem(basketItem_2);
         basket_1.addBasketItem(basketItem_3);
@@ -127,9 +124,6 @@ public class BasketTest {
         }
         assertThat(totalPriceDefault).isEqualTo(new BigDecimal("590.00"));
 
-        items.forEach(item -> itemService.deleteById(item.getId()));
-        discounts.forEach(discount -> priceDiscountService.deleteById(discount.getId()));
-
         items.forEach(item -> {
             itemService.deleteById(item.getId());
         });
@@ -138,13 +132,6 @@ public class BasketTest {
             priceDiscountRepository.deleteById(discount.getId());
         });
 
-        try {
-            basketService.deleteById(basket_1.getId());
-        } catch (BasketStatusException e) {
-            e.printStackTrace();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     @Test
@@ -162,6 +149,8 @@ public class BasketTest {
         try {
             basket = basketService.update(basket);
         } catch (BasketStatusException e) {
+            e.printStackTrace();
+        } catch (NotFoundException e) {
             e.printStackTrace();
         }
 
@@ -187,6 +176,8 @@ public class BasketTest {
         try {
             basket = basketService.update(basket);
         } catch (BasketStatusException e) {
+            e.printStackTrace();
+        } catch (NotFoundException e) {
             e.printStackTrace();
         }
 
@@ -216,6 +207,8 @@ public class BasketTest {
             basket = basketService.update(basket);
         } catch (BasketStatusException e) {
             e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
         }
 
         basketItems = (List<BasketItem>) basketItemService.findAllByBasketId(basket.getId());
@@ -236,6 +229,8 @@ public class BasketTest {
             basket = basketService.update(basket);
         } catch (BasketStatusException e) {
             e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
         }
 
         basketItems = (List<BasketItem>) basketItemService.findAllByBasketId(basket.getId());
@@ -249,29 +244,21 @@ public class BasketTest {
         itemService.deleteById(item_1.getId());
         itemService.deleteById(item_2.getId());
 
-        try {
-            basketService.deleteById(basket.getId());
-        } catch (BasketStatusException e) {
-            e.printStackTrace();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Test
     @DisplayName("should open new basket correctly")
     public void saveBasket() {
         Basket basket = basketService.open();
-        assertThat(basket.getStatus()).isEqualTo(Basket.BasketStatus.NEW);
+        assertThat(basket.getStatus()).isEqualTo(BasketStatus.NEW);
         assertThat(basket.getTotalPrice()).isEqualTo(new BigDecimal("0.00"));
         assertThat(basket.getBasketItems()).isEmpty();
     }
 
     @DisplayName("should deleteById basket correctly")
     @ParameterizedTest(name = "should deleteById {0} basket correctly")
-    @EnumSource(value = Basket.BasketStatus.class, names = {"NEW", "ACTIVE", "CANCELED"})
-    public void deleteBasket(Basket.BasketStatus status) {
+    @EnumSource(value = BasketStatus.class, names = {"NEW", "ACTIVE", "CANCELED"})
+    public void deleteBasket(BasketStatus status) {
         Basket basket = basketService.open();
         basket.setStatus(status);
 
@@ -303,7 +290,7 @@ public class BasketTest {
 
         Optional<Basket> basketOp = basketService.findById(basket.getId());
 
-        assertThat(basketOp.get().getStatus()).isEqualTo(Basket.BasketStatus.CLOSED);
+        assertThat(basketOp.get().getStatus()).isEqualTo(BasketStatus.CLOSED);
 
         Throwable exception = assertThrows(BasketStatusException.class, () -> {
             basketService.deleteById(basketOp.get().getId());
@@ -320,7 +307,7 @@ public class BasketTest {
             basketService.deleteById(5454654654L);
         });
 
-        assertThat(exception.getMessage()).isEqualTo("User not found");
+        assertThat(exception.getMessage()).isEqualTo("Basket not found");
     }
 
 }
