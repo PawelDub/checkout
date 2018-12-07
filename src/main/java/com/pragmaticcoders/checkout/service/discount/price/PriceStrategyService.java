@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class PriceStrategyService {
@@ -19,13 +20,12 @@ public class PriceStrategyService {
     private Strategy strategy = Strategy.DEFAULT;
 
     private PriceStrategy priceStrategy = new DefaultPriceStrategy();
-    private PriceStrategy defaultPriceStrategy;
-    private PriceStrategy pricePerTypeStrategy;
+
+    List<PriceStrategy> priceStrategies;
 
     @Autowired
-    public PriceStrategyService(PriceStrategy defaultPriceStrategy, PriceStrategy pricePerTypeStrategy) {
-        this.defaultPriceStrategy = defaultPriceStrategy;
-        this.pricePerTypeStrategy = pricePerTypeStrategy;
+    public PriceStrategyService(List<PriceStrategy> priceStrategies) {
+        this.priceStrategies = priceStrategies;
     }
 
     public void setPriceStrategy(Strategy strategy) {
@@ -33,14 +33,18 @@ public class PriceStrategyService {
 
         switch (this.strategy) {
             case DEFAULT:
-                setPriceStrategy(defaultPriceStrategy);
+                setPriceStrategy(getPriceStrategie("DefaultPriceStrategy"));
                 logger.info("Strategy {} was set", strategy);
                 break;
             case PRICE_PER_TYPE:
-                setPriceStrategy(pricePerTypeStrategy);
+                setPriceStrategy(getPriceStrategie("PricePerTypeStrategy"));
                 logger.info("Strategy {} was set", strategy);
                 break;
         }
+    }
+
+    private PriceStrategy getPriceStrategie(String strategy) {
+        return priceStrategies.stream().filter(strat -> strat.getClass().getSimpleName().equals(strategy)).findAny().orElseThrow(IllegalArgumentException::new);
     }
 
     public BigDecimal getFinalPrice(Basket basket) throws NotFoundException {
